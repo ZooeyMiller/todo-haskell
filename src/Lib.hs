@@ -1,4 +1,4 @@
-module Lib where
+module Lib (runApp) where
 
 import           Text.Read (readMaybe)
 
@@ -53,3 +53,28 @@ runDelete :: Todos -> IO Todos
 runDelete ts = do
     putStrLn "please enter the index of the todo you want to delete"
     runIndexFn removeTodo ts
+
+renderTodos :: Todos -> IO ()
+renderTodos ((i,(t,c)):xs) = do
+    putStrLn (show i ++ ") " ++ t ++ " " ++ if c then "✔" else "☐")
+    renderTodos xs
+renderTodos [] = return ()
+
+runApp :: Todos -> IO ()
+runApp ts = do
+    putStrLn "----"
+    renderTodos ts
+    putStrLn "please enter:\
+                \\n a to add a todo\
+                \\n t to toggle a todo\
+                \\n d to delete a todo\
+                \\n x to exit"
+    c <- getLine
+    case c of
+        ['a'] -> (runAdd ts) >>= runApp
+        ['t'] -> (runToggle ts) >>= runApp
+        ['d'] -> (runDelete ts) >>= runApp
+        ['x'] -> return ()
+        _     -> do putStrLn "please enter either a, t, d or x"
+                    runApp ts
+
