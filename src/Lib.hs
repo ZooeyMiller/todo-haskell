@@ -1,4 +1,4 @@
-module Lib (runApp) where
+module Lib where
 
 import           Text.Read (readMaybe)
 
